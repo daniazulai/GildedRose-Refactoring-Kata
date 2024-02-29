@@ -57,4 +57,38 @@ class GildedRoseTest extends TestCase
         $this->assertSame($items[0]->sellIn, 5);
         $this->assertSame($items[0]->quality, 80);
     }
+
+    public function testBackstagePasses(): void
+    {
+        $items = [new Item(ItemType::BACKSTAGE_PASSES, 12, 30)];
+        $gildedRose = new GildedRose($items);
+        $gildedRose->updateQuality();
+        // Backstage passes, like aged brie, increases in `Quality` as its `SellIn` value approaches;
+        $this->assertSame($items[0]->sellIn, 11);
+        $this->assertSame($items[0]->quality, 31);
+        $gildedRose->updateQuality();
+        // `Quality` increases by `2` when there are `10` days or less
+        $this->assertSame($items[0]->sellIn, 10);
+        $this->assertSame($items[0]->quality, 33);
+        for ($i = 0; $i < 5; $i++) {
+            $gildedRose->updateQuality();
+        }
+        // Skipped 5 days
+        $this->assertSame($items[0]->sellIn, 5);
+        $this->assertSame($items[0]->quality, 44);
+        $gildedRose->updateQuality();
+        //  and by `3` when there are `5` days or less but
+        $this->assertSame($items[0]->sellIn, 4);
+        $this->assertSame($items[0]->quality, 47);
+        for ($i = 0; $i < 4; $i++) {
+            $gildedRose->updateQuality();
+        }
+        // Skipped 4 days
+        $this->assertSame($items[0]->sellIn, 0);
+        $this->assertSame($items[0]->quality, 50);
+        $gildedRose->updateQuality();
+        // `Quality` drops to `0` after the concert
+        $this->assertSame($items[0]->sellIn, -1);
+        $this->assertSame($items[0]->quality, 0);
+    }
 }

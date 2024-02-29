@@ -46,4 +46,15 @@ class GildedRoseTest extends TestCase
         $this->assertSame($items[0]->sellIn, -2);
         $this->assertSame($items[0]->quality, 50);
     }
+
+    public function testSulfuras(): void
+    {
+        $items = [new Item(ItemType::SULFURAS, 5, 80)];
+        $gildedRose = new GildedRose($items);
+        $gildedRose->updateQuality();
+        // Sulfuras being a legendary item, never has to be sold or decreases in `Quality`
+        // Sulfuras is a legendary item and as such its `Quality` is `80` and it never alters
+        $this->assertSame($items[0]->sellIn, 5);
+        $this->assertSame($items[0]->quality, 80);
+    }
 }

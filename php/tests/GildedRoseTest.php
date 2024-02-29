@@ -91,4 +91,18 @@ class GildedRoseTest extends TestCase
         $this->assertSame($items[0]->sellIn, -1);
         $this->assertSame($items[0]->quality, 0);
     }
+
+    public function testConjuredCake(): void
+    {
+        $items = [new Item(ItemType::CONJURED_CAKE, 1, 30)];
+        $gildedRose = new GildedRose($items);
+        $gildedRose->updateQuality();
+        // Conjured items degrade in `Quality` twice as fast as normal items
+        $this->assertSame($items[0]->sellIn, 0);
+        $this->assertSame($items[0]->quality, 28);
+        $gildedRose->updateQuality();
+        // Once the sell by date has passed, `Quality` degrades twice as fast
+        $this->assertSame($items[0]->sellIn, -1);
+        $this->assertSame($items[0]->quality, 24);
+    }
 }
